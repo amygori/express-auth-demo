@@ -41,7 +41,6 @@ function authenticate(req, username, password){
     if (username === user.username && password === user.password) {
       req.session.authenticated = true;
       console.log('User & Password Authenticated');
-      // console.log(req.session);
     } else {
       return false
     }
@@ -67,7 +66,9 @@ app.post('/', function(req, res){
   var password = req.body.password;
   authenticate(req, username, password);
   if (req.session && req.session.authenticated){
-    res.render('welcome', { username: username })
+    res.render('welcome', { username: username });
+  } else {
+    res.redirect('/');
   }
 })
 
