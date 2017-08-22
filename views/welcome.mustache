@@ -1,8 +1,8 @@
-<h1>You are logged in! </h1>
+{{ #authenticated }}
+  <h1> Hi {{ username }}! You are logged in.</h1>
+{{ /authenticated }}
 
-  <div>
-    <a href="/foo">Check out the foo! </a>
-  </div>
-  <div>
-    <a href="/bar">Or check out the bar!</a>
-  </div>
+{{ ^authenticated }}
+  <h1>You need to log in to access content on this page</h1>
+  <a href="/">Please log in</a>
+{{ /authenticated }}

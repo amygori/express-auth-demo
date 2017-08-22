@@ -1,77 +1,47 @@
+// App instance and dependencies
 const express = require('express');
+const app = express();
 const parseurl = require('parseurl');
 const bodyParser = require('body-parser');
-const session = require('express-session');
 const mustacheExpress = require('mustache-express');
-const data = require('./userData.js');
-const app = express();
+const session = require('express-session');
+const auth = require('./auth.js');
 
-
+// application configuration
+app.set('port', process.env.PORT || 3000);
 app.engine('mustache', mustacheExpress());
 app.set('views', './views');
 app.set('view engine', 'mustache');
 
+// middleware (executed for every incoming request)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true
 }));
 
-app.use(function (req, res, next) {
-  var views = req.session.views;
-
-  if (!views) {
-    views = req.session.views = {};
-  }
-
-  // get the url pathname
-  var pathname = parseurl(req).pathname;
-
-  // count the views
-  views[pathname] = (views[pathname] || 0) + 1
-
-  next();
-})
-
-function authenticate(req, username, password){
-  var authenticatedUser = data.users.find(function (user) {
-    if (username === user.username && password === user.password) {
-      req.session.authenticated = true;
-      console.log('User & Password Authenticated');
-    } else {
-      return false
-    }
-  });
-  console.log(req.session);
-  return req.session;
-}
-
-app.get('/foo', function (req, res, next) {
-  res.send('you viewed this page ' + req.session.views['/foo'] + ' times')
-})
-
-app.get('/bar', function (req, res, next) {
-  res.send('you viewed this page ' + req.session.views['/bar'] + ' times')
-})
-
+// Routes
 app.get('/', function (req, res){
+  // render the login form
   res.render('index');
 });
 
-app.post('/', function(req, res){
-  var username = req.body.username;
-  var password = req.body.password;
-  authenticate(req, username, password);
-  if (req.session && req.session.authenticated){
-    res.render('welcome', { username: username });
+app.post('/', auth.checkCredentials, function(req, res){
+  // handle the form submission
+  if (req.authenticated){
+    console.log('authenticated!')
+    // render a logged in page
+    res.render('welcome', { username: req.body.username });
   } else {
+    console.log('user or password do not match')
+    // ...or redirect to the sign-in form
     res.redirect('/');
   }
 })
 
-app.listen(3000, function(){
+// Set up localhost:3000
+app.listen(app.get('port'), function(){
   console.log('Started express application!')
 });
