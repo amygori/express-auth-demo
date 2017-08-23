@@ -1,15 +1,15 @@
 module.exports = {
   users: [
     {
-      username: "amy",
+      name: "amy",
       password: "chihuahua"
     },
     {
-      username: "grayson",
+      name: "grayson",
       password: "dinotrux"
     },
     {
-      username: "lilamae",
+      name: "lilamae",
       password: "aye-aye"
     }
   ]
