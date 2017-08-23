@@ -25,19 +25,19 @@ app.use(session({
 // Routes
 app.get('/', function (req, res){
   // render the login form
-  res.render('index');
+  res.render('index', {authError: req.authError });
 });
 
 app.post('/', auth.checkCredentials, function(req, res){
   // handle the form submission
-  if (req.authenticated){
+  if (res.authenticated){
     console.log('authenticated!')
     // render a logged in page
-    res.render('welcome', { username: req.body.username });
+    res.render('welcome', { authenticated: res.authenticated, username: req.body.username });
   } else {
     console.log('user or password do not match')
     // ...or redirect to the sign-in form
-    res.redirect('/');
+    res.render('index', { authError: res.authError });
   }
 })
 

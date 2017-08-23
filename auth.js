@@ -3,10 +3,10 @@ const data = require('./userData');
 function checkCredentials(req, res, next){
   data.users.find(function(user){
     if (req.body.username === user.name && req.body.password === user.password){
-      req.authenticated = true;
-      res.locals.authenticated = true;
-      res.locals.user = user.name
+      console.log('user and password found')
+      res.authenticated = true;
     } else {
+      res.authError = 'Login failed'
       return false
     }
   })
